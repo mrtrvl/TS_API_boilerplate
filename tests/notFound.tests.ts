@@ -12,7 +12,7 @@ describe('Not found', () => {
     it('Responds with json with Not found message and statusCode 404', async () => {
       const response = await request(app).get('/nonExistingRoute');
       expect(response.body).to.be.a('object');
-      expect(response.body.message).to.equal('Not found');
+      expect(response.body.message).to.equal('Route not found');
       expect(response.type).to.equal('application/json');
       expect(response.statusCode).to.equal(404);
     });

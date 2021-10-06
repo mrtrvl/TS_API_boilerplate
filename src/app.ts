@@ -11,6 +11,6 @@ app.use(express.json());
 // Routes
 app.use('/ping', pingRouter);
 app.use('/users', usersRouter);
-app.use('*', notFoundRouter);
+app.use(notFoundRouter);
 
 export default app;

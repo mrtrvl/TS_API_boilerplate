@@ -1,4 +1,4 @@
-import { NewUser, User } from '.';
+import { NewUser, User, UpdateUser } from '.';
 import db from '../../db';
 
 const getAllUsers = async () => {
@@ -30,11 +30,20 @@ const createUser = async (newUser: NewUser): Promise<number | boolean> => {
   return id;
 };
 
+const updateUser = async (updateUser: UpdateUser): Promise<boolean> => {
+  const user = await getUserById(updateUser.id);
+  if (!user) return false;
+  const index = db.users.findIndex((element) => element.id === updateUser.id);
+  Object.assign(db.users[index], updateUser);
+  return true;
+};
+
 const usersService = {
   getAllUsers,
   getUserById,
   createUser,
   getUserByEmail,
+  updateUser,
 };
 
 export default usersService;

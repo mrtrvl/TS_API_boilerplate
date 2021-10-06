@@ -20,6 +20,24 @@ const newUserSchema = Joi.object({
     .required(),
 });
 
+const updateUserSchema = Joi.object({
+  firstName: Joi.string()
+    .alphanum()
+    .min(2)
+    .max(30),
+  lastName: Joi.string()
+    .alphanum()
+    .min(2)
+    .max(30),
+  email: Joi.string()
+    .email(),
+  password: Joi.string()
+    .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+  role: Joi.string()
+    .alphanum(),
+})
+  .or('firstName', 'lastName', 'email', 'password', 'role');
+
 const idSchema = Joi.object({
   id: Joi.number(),
 });
@@ -83,9 +101,54 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   return next();
 };
 
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const validateId = await idSchema.validate({ id });
+    if (validateId.error) {
+      return generateErrorMessage(validateId.error, res);
+    }
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+    } = req.body;
+
+    const updateUser = {
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+    };
+
+    const validateUserData = await updateUserSchema.validate(updateUser);
+    if (validateUserData.error) {
+      return generateErrorMessage(validateUserData.error, res);
+    }
+    // Remove undefined keys from object
+    Object.keys(validateUserData.value).forEach(key => {
+      if (validateUserData.value[key] === undefined) {
+        delete validateUserData.value[key];
+      }
+    });
+    res.locals.updateUser = {
+      id: validateId.value.id,
+      ...validateUserData.value
+    };
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+  return next();
+}
+
 const usersValidators = {
   createUser,
   getUserById,
+  updateUser,
 };
 
 export default usersValidators;

@@ -50,7 +50,6 @@ describe('Users controller', () => {
   });
   describe('GET /users/:id', () => {
     it('Responds with statusCode 200 and user data', async () => {
-      console.log('Test', userId);
       const response = await request(app).get(`/users/${userId}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
@@ -63,6 +62,27 @@ describe('Users controller', () => {
     it('Responds with statusCode 400 due to inproper user id', async () => {
       const inproperUserId = 'qwert';
       const response = await request(app).get(`/users/${inproperUserId}`);
+      expect(response.type).to.equal('application/json');
+      expect(response.body).to.be.a('object');
+      expect(response.body.error).to.equal(true);
+      expect(response.statusCode).to.equal(400);
+    });
+  });
+  describe('PATCH /users/:id', () => {
+    it('Responds with statusCode 204 after changing usedata', async () => {
+      const firstName = 'Maarika';
+      const response = await request(app).patch(`/users/${userId}`).send({firstName});
+      expect(response.type).to.equal('');
+      expect(response.statusCode).to.equal(204);
+    });
+    it('Responds with statusCode 400 due to missing usedata', async () => {
+      const response = await request(app).patch(`/users/${userId}`);
+      expect(response.type).to.equal('application/json');
+      expect(response.statusCode).to.equal(400);
+    });
+    it('Responds with statusCode 400 due to inproper user id', async () => {
+      const inproperUserId = 'qwert';
+      const response = await request(app).patch(`/users/${inproperUserId}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body.error).to.equal(true);

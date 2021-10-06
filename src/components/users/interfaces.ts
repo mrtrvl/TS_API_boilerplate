@@ -5,6 +5,15 @@ interface NewUser {
   password: string;
 }
 
+interface UpdateUser {
+  id: number;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  password?: string;
+  role?: string;
+}
+
 interface User extends NewUser {
   id: number;
   role: string;
@@ -13,4 +22,5 @@ interface User extends NewUser {
 export {
   User,
   NewUser,
+  UpdateUser,
 };
