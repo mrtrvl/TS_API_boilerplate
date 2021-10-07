@@ -14,6 +14,10 @@ const newUser: NewUser = {
 let userId: number;
 const inproperUserId = 'qwert';
 const nonexistingUserId = 999999999;
+const noneexistingUser = {
+  email: 'nonexisting@email.com',
+  password: 'password',
+};
 
 describe('Users controller', () => {
   describe('POST /users', () => {
@@ -38,6 +42,36 @@ describe('Users controller', () => {
       expect(response.body).to.be.a('object');
       expect(response.body.error).to.equal(true);
       expect(response.statusCode).to.equal(400);
+    });
+  });
+  describe('POST /users/login', () => {
+    it('Responds with statusCode 400 because of missing email', async () => {
+      const response = await request(app).post('/users/login').send({ email: noneexistingUser.email });
+      expect(response.type).to.equal('application/json');
+      expect(response.body).to.be.a('object');
+      expect(response.body.error).to.equal(true);
+      expect(response.statusCode).to.equal(400);
+    });
+    it('Responds with statusCode 400 because of missing password', async () => {
+      const response = await request(app).post('/users/login').send({ password: noneexistingUser.password });
+      expect(response.type).to.equal('application/json');
+      expect(response.body).to.be.a('object');
+      expect(response.body.error).to.equal(true);
+      expect(response.statusCode).to.equal(400);
+    });
+    it('Responds with statusCode 404 because of nonexisting user', async () => {
+      const response = await request(app).post('/users/login').send(noneexistingUser);
+      expect(response.type).to.equal('application/json');
+      expect(response.body).to.be.a('object');
+      expect(response.statusCode).to.equal(404);
+    });
+    it('Responds with statusCode 200 after successful login', async () => {
+      const response = await request(app).post('/users/login').send(newUser);
+      expect(response.type).to.equal('application/json');
+      expect(response.body).to.be.a('object');
+      expect(response.body).has.property('jwt');
+      expect(response.body.jwt).to.be.a('string');
+      expect(response.statusCode).to.equal(200);
     });
   });
   describe('GET /users', () => {

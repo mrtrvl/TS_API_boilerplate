@@ -21,8 +21,14 @@ interface User extends NewUser {
   status: 'active' | 'deleted';
 }
 
+interface Login {
+  email: string;
+  password: string;
+}
+
 export {
   User,
   NewUser,
   UpdateUser,
+  Login,
 };

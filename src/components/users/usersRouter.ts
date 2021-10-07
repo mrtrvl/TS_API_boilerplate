@@ -9,6 +9,7 @@ router
   .post('/', usersValidators.createUser, usersController.createUser)
   .get('/:id', usersValidators.getUserById, usersController.getUserById)
   .patch('/:id', usersValidators.getUserById, usersValidators.updateUser, usersController.updateUser)
-  .delete('/:id', usersValidators.getUserById, usersController.deleteUser);
+  .delete('/:id', usersValidators.getUserById, usersController.deleteUser)
+  .post('/login', usersValidators.login, usersController.login);
 
 export default router;

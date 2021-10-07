@@ -21,6 +21,15 @@ const newUserSchema = Joi.object({
     .required(),
 });
 
+const loginSchema = Joi.object({
+  email: Joi.string()
+    .email()
+    .required(),
+  password: Joi.string()
+    .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
+    .required(),
+});
+
 const updateUserSchema = Joi.object({
   firstName: Joi.string()
     .alphanum()
@@ -152,10 +161,35 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   return next();
 };
 
+const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {
+      email,
+      password,
+    } = req.body;
+    const validateLogin = await loginSchema.validate({ email, password });
+    if (validateLogin.error) {
+      return generateErrorMessage(validateLogin.error, res);
+    }
+    const user: User | undefined = await usersService.getUserByEmail(validateLogin.value.email);
+    if (!user) {
+      return res.status(404).json({
+        message: `No user found with email: ${email}`,
+      });
+    }
+    res.locals.loginPassword = password;
+    res.locals.user = user;
+  } catch (error) {
+    console.log(error);
+  }
+  return next();
+};
+
 const usersValidators = {
   createUser,
   getUserById,
   updateUser,
+  login,
 };
 
 export default usersValidators;

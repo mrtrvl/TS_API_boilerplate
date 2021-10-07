@@ -69,6 +69,11 @@ const deleteUser = async (user: User): Promise<boolean> => {
   return true;
 };
 
+const login = async (loginPassword: string, user: User): Promise<boolean> => {
+  const match = await hashService.comparePasswords(loginPassword, user.password);
+  return match;
+};
+
 const usersService = {
   getAllUsers,
   getUserById,
@@ -76,6 +81,7 @@ const usersService = {
   getUserByEmail,
   updateUser,
   deleteUser,
+  login,
 };
 
 export default usersService;
