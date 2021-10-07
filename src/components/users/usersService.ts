@@ -2,7 +2,7 @@ import { NewUser, User, UpdateUser } from '.';
 import db from '../../db';
 
 const getAllUsers = async () => {
-  const { users } = db;
+  const users = db.users.filter((element) => element.status !== 'deleted');
   return users;
 };
 
@@ -18,7 +18,7 @@ const getUserByEmail = async (email: string): Promise<User | undefined> => {
  * Returns user with specified id
  */
 const getUserById = async (id: number): Promise<User | undefined> => {
-  const user: User | undefined = db.users.find((element) => element.id === id);
+  const user: User | undefined = db.users.find((element) => element.id === id && element.status !== 'deleted');
   return user;
 };
 
@@ -30,10 +30,12 @@ const createUser = async (newUser: NewUser): Promise<number | boolean> => {
   const existingUser = await getUserByEmail(newUser.email);
   if (existingUser) return false;
   const id = db.users.length + 1;
-  const role = 'User';
+  const role = 'user';
+  const status = 'active';
   const user: User = {
     id,
     role,
+    status,
     ...newUser,
   };
   db.users.push(user);
@@ -56,7 +58,7 @@ const updateUser = async (updateUser: UpdateUser): Promise<boolean> => {
  */
 const deleteUser = async (user: User): Promise<boolean> => {
   const index = db.users.findIndex((element) => element.id === user.id);
-  db.users.splice(index, 1);
+  db.users[index].status = 'deleted';
   return true;
 };
 

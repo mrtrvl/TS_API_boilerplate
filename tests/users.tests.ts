@@ -45,6 +45,7 @@ describe('Users controller', () => {
       const response = await request(app).get('/users');
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
+      expect(response.body).has.property('users');
       expect(response.body.users).to.be.a('array');
       expect(response.body.users.length).to.be.greaterThan(0);
       expect(response.statusCode).to.equal(200);
@@ -55,10 +56,12 @@ describe('Users controller', () => {
       const response = await request(app).get(`/users/${userId}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
+      expect(response.body).has.property('user');
       expect(response.body.user.firstName).to.equal(newUser.firstName);
       expect(response.body.user.lastName).to.equal(newUser.lastName);
       expect(response.body.user.email).to.equal(newUser.email);
-      expect(response.body.user.role).to.equal('User');
+      expect(response.body.user.role).to.equal('user');
+      expect(response.body.user.status).to.equal('active');
       expect(response.statusCode).to.equal(200);
     });
     it('Responds with statusCode 400 due to inproper user id', async () => {

@@ -11,12 +11,14 @@ interface UpdateUser {
   lastName?: string;
   email?: string;
   password?: string;
-  role?: string;
+  role?: 'admin' | 'user';
+  status?: 'active' | 'deleted';
 }
 
 interface User extends NewUser {
   id: number;
-  role: string;
+  role: 'admin' | 'user';
+  status: 'active' | 'deleted';
 }
 
 export {
