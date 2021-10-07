@@ -28,20 +28,14 @@ const createUser = async (req: Request, res: Response) => {
 };
 
 const updateUser = async (req: Request, res: Response) => {
-  const { updateUser } = res.locals;
-  const result: boolean = await usersService.updateUser(updateUser);
-  if (!result) {
-    return res.status(400).json({
-      error: true,
-      message: `Cannot find user with id: ${updateUser.id}`,
-    });
-  }
+  const user = res.locals.updateUser;
+  await usersService.updateUser(user);
   return res.status(204).send();
 };
 
 const deleteUser = async (req: Request, res: Response) => {
   const { user } = res.locals;
-  const result: boolean = await usersService.deleteUser(user);
+  await usersService.deleteUser(user);
   return res.status(204).send();
 };
 

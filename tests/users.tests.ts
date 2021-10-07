@@ -83,7 +83,7 @@ describe('Users controller', () => {
   describe('PATCH /users/:id', () => {
     it('Responds with statusCode 204 after changing users data', async () => {
       const firstName = 'Maarika';
-      const response = await request(app).patch(`/users/${userId}`).send({firstName});
+      const response = await request(app).patch(`/users/${userId}`).send({ firstName });
       expect(response.type).to.equal('');
       expect(response.statusCode).to.equal(204);
     });

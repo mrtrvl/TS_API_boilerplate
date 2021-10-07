@@ -123,7 +123,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
       role,
     } = req.body;
 
-    const updateUser = {
+    const user = {
       firstName,
       lastName,
       email,
@@ -131,26 +131,26 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
       role,
     };
 
-    const validateUserData = await updateUserSchema.validate(updateUser);
+    const validateUserData = await updateUserSchema.validate(user);
     if (validateUserData.error) {
       return generateErrorMessage(validateUserData.error, res);
     }
     // Remove undefined keys from object
-    Object.keys(validateUserData.value).forEach(key => {
+    await Object.keys(validateUserData.value).forEach((key) => {
       if (validateUserData.value[key] === undefined) {
         delete validateUserData.value[key];
       }
     });
     res.locals.updateUser = {
       id: res.locals.user.id,
-      ...validateUserData.value
+      ...validateUserData.value,
     };
     return next();
   } catch (error) {
     console.log(error);
   }
   return next();
-}
+};
 
 const usersValidators = {
   createUser,

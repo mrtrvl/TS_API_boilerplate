@@ -1,4 +1,5 @@
 import { NewUser, User, UpdateUser } from '.';
+import hashService from '../general';
 import db from '../../db';
 
 const getAllUsers = async () => {
@@ -32,11 +33,13 @@ const createUser = async (newUser: NewUser): Promise<number | boolean> => {
   const id = db.users.length + 1;
   const role = 'user';
   const status = 'active';
+  const password = await hashService.hashPassword(newUser.password);
   const user: User = {
     id,
     role,
     status,
     ...newUser,
+    password,
   };
   db.users.push(user);
   return id;
@@ -46,9 +49,13 @@ const createUser = async (newUser: NewUser): Promise<number | boolean> => {
  * Updates user
  * Returns true if successful
  */
-const updateUser = async (updateUser: UpdateUser): Promise<boolean> => {
-  const index = db.users.findIndex((element) => element.id === updateUser.id);
-  Object.assign(db.users[index], updateUser);
+const updateUser = async (user: UpdateUser): Promise<boolean> => {
+  const index = db.users.findIndex((element) => element.id === user.id);
+  Object.assign(db.users[index], user);
+  if (user.password) {
+    const hashedPassword = await hashService.hashPassword(user.password);
+    db.users[index].password = hashedPassword;
+  }
   return true;
 };
 
