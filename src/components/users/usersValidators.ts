@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Joi, { ValidationError } from 'joi';
+import { User, usersService } from '.';
 
 const newUserSchema = Joi.object({
   firstName: Joi.string()
@@ -61,7 +62,13 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     if (validate.error) {
       return generateErrorMessage(validate.error, res);
     }
-    res.locals.userId = validate.value.id;
+    const user: User | undefined = await usersService.getUserById(validate.value.id);
+    if (!user) {
+      return res.status(404).json({
+        message: `No user found with id: ${id}`,
+      });
+    }
+    res.locals.user = user;
     return next();
   } catch (error) {
     console.log(error);
@@ -101,13 +108,13 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   return next();
 };
 
+/**
+ * Validate id as a number from req.params
+ * Validate update user input from req.body
+ * If successful, write id and update data into res.local.updateUser
+ */
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.params;
-    const validateId = await idSchema.validate({ id });
-    if (validateId.error) {
-      return generateErrorMessage(validateId.error, res);
-    }
     const {
       firstName,
       lastName,
@@ -135,7 +142,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
       }
     });
     res.locals.updateUser = {
-      id: validateId.value.id,
+      id: res.locals.user.id,
       ...validateUserData.value
     };
     return next();

@@ -9,13 +9,7 @@ const getAllUsers = async (req: Request, res: Response) => {
 };
 
 const getUserById = async (req: Request, res: Response) => {
-  const id = res.locals.userId;
-  const user: User | undefined = await usersService.getUserById(parseInt(id, 10));
-  if (!user) {
-    return res.status(400).json({
-      message: `User not found with id: ${id}`,
-    });
-  }
+  const { user } = res.locals;
   return res.status(200).json({
     user,
   });
@@ -45,11 +39,18 @@ const updateUser = async (req: Request, res: Response) => {
   return res.status(204).send();
 };
 
+const deleteUser = async (req: Request, res: Response) => {
+  const { user } = res.locals;
+  const result: boolean = await usersService.deleteUser(user);
+  return res.status(204).send();
+};
+
 const usersController = {
   getAllUsers,
   getUserById,
   createUser,
   updateUser,
+  deleteUser,
 };
 
 export default usersController;
