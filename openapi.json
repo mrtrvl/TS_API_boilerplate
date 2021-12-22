@@ -46,6 +46,20 @@
         "message": {
           "type": "string"
         },
+        "errorMessage": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "$ref": "#/components/schemas/error"
+            },
+            "message": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/message"
+              }
+            }
+          }
+        },
         "user": {
           "type": "object",
           "properties": {
@@ -102,6 +116,7 @@
         "post": {
           "summary": "Creates new user with user rights",
           "requestBody": {
+            "required": true,
             "content": {
               "application/json": {
                 "schema": {
@@ -145,18 +160,7 @@
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "object",
-                    "properties": {
-                      "error": {
-                        "$ref": "#/components/schemas/error"
-                      },
-                      "message": {
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/components/schemas/message"
-                        }
-                      }
-                    }
+                    "$ref": "#/components/schemas/errorMessage"
                   },
                   "examples": {
                     "No first name": {
@@ -235,7 +239,103 @@
                     "type": "object",
                     "properties": {
                       "message": {
-                        "type": "string",
+                        "$ref": "#/components/schemas/message",
+                        "example": "No user found with id: {id}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "patch": {
+          "summary": "Updates user specified by id. Required at least one of the properties.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "firstName": {
+                      "$ref": "#/components/schemas/firstName"
+                    },
+                    "lastName": {
+                      "$ref": "#/components/schemas/lastName"
+                    },
+                    "email": {
+                      "$ref": "#/components/schemas/email"
+                    },
+                    "role": {
+                      "$ref": "#/components/schemas/role"
+                    },
+                    "password": {
+                      "$ref": "#/components/schemas/password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "204": {
+              "description": "Update user",
+              "content": {}
+            },
+            "400": {
+              "description": "Missing data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/errorMessage"
+                  },
+                  "examples": {
+                    "No first name": {
+                      "value": {
+                        "error": true,
+                        "message": [
+                          "\"value\" must contain at least one of [firstName, lastName, email, password, role]"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "$ref": "#/components/schemas/message",
+                        "example": "No user found with id: {id}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "responses": {
+            "204": {
+              "description": "Delete user",
+              "content": {}
+            },
+            "404": {
+              "description": "User not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "$ref": "#/components/schemas/message",
                         "example": "No user found with id: {id}"
                       }
                     }
