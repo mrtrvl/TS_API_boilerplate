@@ -11,7 +11,7 @@ const db: Db = {
       lastName: 'Doe',
       role: 'admin',
       email: 'john@doe.com',
-      password: 'asas',
+      password: '$2b$10$XkQ/1HIyp4TCzdUxtQTq/ObKjJrKs8XECDHfA7hGR7ILOVUYazvge',
       status: 'active',
     },
     {

@@ -27,7 +27,7 @@
         },
         "password": {
           "type": "string",
-          "example": "mySecretPassword123"
+          "example": "john"
         },
         "role": {
           "type": "string",
@@ -45,6 +45,10 @@
         },
         "message": {
           "type": "string"
+        },
+        "jwt": {
+          "type": "string",
+          "example": "jwt"
         },
         "errorMessage": {
           "type": "object",
@@ -94,6 +98,9 @@
     "paths": {
       "/users": {
         "get": {
+          "tags": [
+            "Users operations"
+          ],
           "summary": "Responds with list of users",
           "responses": {
             "200": {
@@ -114,6 +121,9 @@
           }
         },
         "post": {
+          "tags": [
+            "Users operations"
+          ],
           "summary": "Creates new user with user rights",
           "requestBody": {
             "required": true,
@@ -194,6 +204,14 @@
                           "\"password\" is required"
                         ]
                       }
+                    },
+                    "User already exists": {
+                      "value": {
+                        "error": true,
+                        "message": [
+                          "User with email: {email} already exists"
+                        ]
+                      }
                     }
                   }
                 }
@@ -214,6 +232,9 @@
           }
         ],
         "get": {
+          "tags": [
+            "Users operations"
+          ],
           "summary": "Responds with user specified by id",
           "responses": {
             "200": {
@@ -250,6 +271,9 @@
           }
         },
         "patch": {
+          "tags": [
+            "Users operations"
+          ],
           "summary": "Updates user specified by id. Required at least one of the properties.",
           "requestBody": {
             "required": true,
@@ -322,6 +346,10 @@
           }
         },
         "delete": {
+          "tags": [
+            "Users operations"
+          ],
+          "summary": "Deletes user",
           "responses": {
             "204": {
               "description": "Delete user",
@@ -337,6 +365,121 @@
                       "message": {
                         "$ref": "#/components/schemas/message",
                         "example": "No user found with id: {id}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/users/login": {
+        "post": {
+          "tags": [
+            "Login operations"
+          ],
+          "summary": "Authentication endpoint",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "$ref": "#/components/schemas/email"
+                    },
+                    "password": {
+                      "$ref": "#/components/schemas/password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful login, returns JWT token",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "jwt": {
+                        "$ref": "#/components/schemas/jwt"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Missing required data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/errorMessage"
+                  },
+                  "examples": {
+                    "No email": {
+                      "value": {
+                        "error": true,
+                        "message": [
+                          "\"email\" is required"
+                        ]
+                      }
+                    },
+                    "No password": {
+                      "value": {
+                        "error": true,
+                        "message": [
+                          "\"password\" is required"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unsuccessful login",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "$ref": "#/components/schemas/message"
+                      }
+                    }
+                  },
+                  "examples": {
+                    "Wrong password provided": {
+                      "value": {
+                        "message": "Wrong password"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "$ref": "#/components/schemas/message"
+                      }
+                    }
+                  },
+                  "examples": {
+                    "No user with specified email": {
+                      "value": {
+                        "message": "No user found with email: juku@juurikas.ee"
                       }
                     }
                   }
