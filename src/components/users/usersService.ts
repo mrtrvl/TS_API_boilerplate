@@ -1,5 +1,5 @@
-import { NewUser, User, UpdateUser } from '.';
-import hashService from '../general';
+import { INewUser, IUser, IUpdateUser } from '.';
+import { hashService, jwtService } from '../general';
 import db from '../../db';
 
 /**
@@ -13,7 +13,7 @@ const getAllUsers = async () => {
 /**
  * Returns user by e-mail
  */
-const getUserByEmail = async (email: string): Promise<User | undefined> => {
+const getUserByEmail = async (email: string): Promise<IUser | undefined> => {
   const user = db.users.find((element) => element.email === email);
   return user;
 };
@@ -21,8 +21,8 @@ const getUserByEmail = async (email: string): Promise<User | undefined> => {
 /**
  * Returns user with specified id
  */
-const getUserById = async (id: number): Promise<User | undefined> => {
-  const user: User | undefined = db.users.find((element) => element.id === id && element.status !== 'deleted');
+const getUserById = async (id: number): Promise<IUser | undefined> => {
+  const user: IUser | undefined = db.users.find((element) => element.id === id && element.status !== 'deleted');
   return user;
 };
 
@@ -30,14 +30,14 @@ const getUserById = async (id: number): Promise<User | undefined> => {
  * Inserts new user into database.
  * Retruns users id
  */
-const createUser = async (newUser: NewUser): Promise<number | boolean> => {
+const createUser = async (newUser: INewUser): Promise<number | boolean> => {
   const existingUser = await getUserByEmail(newUser.email);
   if (existingUser) return false;
   const id = db.users.length + 1;
   const role = 'user';
   const status = 'active';
   const password = await hashService.hashPassword(newUser.password);
-  const user: User = {
+  const user: IUser = {
     id,
     role,
     status,
@@ -52,7 +52,7 @@ const createUser = async (newUser: NewUser): Promise<number | boolean> => {
  * Updates user
  * Returns true if successful
  */
-const updateUser = async (user: UpdateUser): Promise<boolean> => {
+const updateUser = async (user: IUpdateUser): Promise<boolean> => {
   const index = db.users.findIndex((element) => element.id === user.id);
   Object.assign(db.users[index], user);
   if (user.password) {
@@ -66,15 +66,18 @@ const updateUser = async (user: UpdateUser): Promise<boolean> => {
  * Deletes user
  * Returns true
  */
-const deleteUser = async (user: User): Promise<boolean> => {
+const deleteUser = async (user: IUser): Promise<boolean> => {
   const index = db.users.findIndex((element) => element.id === user.id);
   db.users[index].status = 'deleted';
   return true;
 };
 
-const login = async (loginPassword: string, user: User): Promise<boolean> => {
+const login = async (loginPassword: string, user: IUser): Promise<string | false> => {
   const match = await hashService.comparePasswords(loginPassword, user.password);
-  return match;
+  if (!match) return false;
+  const token = await jwtService.sign(user);
+  if (!token) return false;
+  return token;
 };
 
 const usersService = {

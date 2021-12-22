@@ -1,3 +1,7 @@
 import hashService from './hashService';
+import jwtService from './jwtService';
 
-export default hashService;
+export {
+  hashService,
+  jwtService,
+};

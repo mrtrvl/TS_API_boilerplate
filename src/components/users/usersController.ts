@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { usersService, User } from '.';
+import { usersService, IUser } from '.';
 
 const getAllUsers = async (req: Request, res: Response) => {
-  const users: User[] = await usersService.getAllUsers();
+  const users: IUser[] = await usersService.getAllUsers();
   return res.status(200).json({
     users,
   });
@@ -42,14 +42,14 @@ const deleteUser = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   const { user } = res.locals;
   const { loginPassword } = res.locals;
-  const loggedIn = await usersService.login(loginPassword, user);
-  if (!loggedIn) {
+  const token = await usersService.login(loginPassword, user);
+  if (!token) {
     return res.status(401).json({
       message: 'Wrong password',
     });
   }
   return res.status(200).send({
-    jwt: 'Successful login',
+    token,
   });
 };
 

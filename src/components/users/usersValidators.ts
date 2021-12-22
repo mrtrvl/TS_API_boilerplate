@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Joi, { ValidationError } from 'joi';
-import { User, usersService } from '.';
+import { IUser, usersService } from '.';
 
 const newUserSchema = Joi.object({
   firstName: Joi.string()
@@ -71,7 +71,7 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     if (validate.error) {
       return generateErrorMessage(validate.error, res);
     }
-    const user: User | undefined = await usersService.getUserById(validate.value.id);
+    const user: IUser | undefined = await usersService.getUserById(validate.value.id);
     if (!user) {
       return res.status(404).json({
         message: `No user found with id: ${id}`,
@@ -171,7 +171,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     if (validateLogin.error) {
       return generateErrorMessage(validateLogin.error, res);
     }
-    const user: User | undefined = await usersService.getUserByEmail(validateLogin.value.email);
+    const user: IUser | undefined = await usersService.getUserByEmail(validateLogin.value.email);
     if (!user) {
       return res.status(404).json({
         message: `No user found with email: ${email}`,

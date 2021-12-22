@@ -5,7 +5,7 @@
       "version":"1.0"
     },
     "servers": [
-      {"url":"http://localhost:4000"}
+      {"url":"http://localhost:3000"}
     ],
     "components": {
       "schemas": {
@@ -46,9 +46,9 @@
         "message": {
           "type": "string"
         },
-        "jwt": {
+        "token": {
           "type": "string",
-          "example": "jwt"
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjQwMTc2OTc3LCJleHAiOjE2NDAxODA1Nzd9.dAA_6x9dXwDc37-ryBoU7H1Ix7PLOSX-sV7OIT4R7zE"
         },
         "errorMessage": {
           "type": "object",
@@ -407,7 +407,7 @@
                     "type": "object",
                     "properties": {
                       "jwt": {
-                        "$ref": "#/components/schemas/jwt"
+                        "$ref": "#/components/schemas/token"
                       }
                     }
                   }

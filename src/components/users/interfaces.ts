@@ -1,11 +1,11 @@
-interface NewUser {
+interface INewUser {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
 }
 
-interface UpdateUser {
+interface IUpdateUser {
   id: number;
   firstName?: string;
   lastName?: string;
@@ -15,20 +15,20 @@ interface UpdateUser {
   status?: 'active' | 'deleted';
 }
 
-interface User extends NewUser {
+interface IUser extends INewUser {
   id: number;
   role: 'admin' | 'user';
   status: 'active' | 'deleted';
 }
 
-interface Login {
+interface ILogin {
   email: string;
   password: string;
 }
 
 export {
-  User,
-  NewUser,
-  UpdateUser,
-  Login,
+  IUser,
+  INewUser,
+  IUpdateUser,
+  ILogin,
 };

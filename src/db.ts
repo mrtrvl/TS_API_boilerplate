@@ -1,7 +1,7 @@
-import { User } from './components/users';
+import { IUser } from './components/users';
 
 interface Db {
-  users: User[];
+  users: IUser[];
 }
 const db: Db = {
   users: [
