@@ -1,9 +1,13 @@
 import express, { Application } from 'express';
+import cors from 'cors';
 import { pingRouter } from './components/ping';
 import { usersRouter } from './components/users';
 import { notFoundRouter } from './components/notFound';
 
 const app: Application = express();
+
+// CORS middleware
+app.use(cors());
 
 // Json middleware
 app.use(express.json());

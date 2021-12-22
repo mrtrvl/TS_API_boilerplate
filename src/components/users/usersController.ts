@@ -40,7 +40,6 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 
 const login = async (req: Request, res: Response) => {
-  console.log(res.locals);
   const { user } = res.locals;
   const { loginPassword } = res.locals;
   const loggedIn = await usersService.login(loginPassword, user);

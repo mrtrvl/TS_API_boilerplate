@@ -2,13 +2,16 @@ import { NewUser, User, UpdateUser } from '.';
 import hashService from '../general';
 import db from '../../db';
 
+/**
+ * Returns list of users from database
+ */
 const getAllUsers = async () => {
   const users = db.users.filter((element) => element.status !== 'deleted');
   return users;
 };
 
 /**
- * Returns list of users from database
+ * Returns user by e-mail
  */
 const getUserByEmail = async (email: string): Promise<User | undefined> => {
   const user = db.users.find((element) => element.email === email);

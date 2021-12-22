@@ -1,0 +1,89 @@
+{
+    "openapi":"3.0.2",
+    "info": {
+      "title":"TS API boilerplate",
+      "version":"1.0"
+    },
+    "servers": [
+      {"url":"http://localhost:4000"}
+    ],
+    "components": {
+      "schemas": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "firstName": {
+          "type": "string",
+          "example": "John"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "email": {
+          "type": "string",
+          "example": "john@doe.com"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "user"],
+          "example": "admin"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "deleted"],
+          "example": "active"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/components/schemas/id"
+              },
+              "firstName": {
+                "$ref": "#/components/schemas/firstName"
+              },
+              "lastName": {
+                "$ref": "#/components/schemas/lastName"
+              },
+              "email": {
+                "$ref": "#/components/schemas/email"
+              },
+              "role": {
+                "$ref": "#/components/schemas/role"
+              },
+              "status": {
+                "$ref": "#/components/schemas/status"
+              }
+            }
+          }
+        } 
+      }
+    },
+    "paths": {
+      "/users": {
+        "get": {
+          "responses": {
+            "200": {
+              "description": "List of users",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "users": {
+                        "$ref": "#/components/schemas/users"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
