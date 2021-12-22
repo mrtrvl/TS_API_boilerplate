@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import config from '../../config';
-import { IUser } from '../users/interfaces';
+import config from '../../../config';
+import { IUser } from '../../users/interfaces';
 
 const jwtService = {
   sign: async (user: IUser) => {
@@ -13,7 +13,7 @@ const jwtService = {
   },
   verify: async (token: string) => {
     try {
-      const verify = await jwt.verify(token, config.jwt.expiresIn);
+      const verify = await jwt.verify(token, config.jwt.secret);
       return verify;
     } catch (error) {
       // console.log(error);

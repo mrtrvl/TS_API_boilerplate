@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { pingRouter } from './components/ping';
@@ -17,7 +17,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(express.json());
 
 // Routes
-app.use('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.status(200).send(
     `
       <h1>Welcome to TS API boilerplate</h1>
