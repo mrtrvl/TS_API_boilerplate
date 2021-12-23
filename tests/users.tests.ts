@@ -2,10 +2,11 @@ import request from 'supertest';
 import { expect } from 'chai';
 import mocha from 'mocha';
 import app from '../src/app';
-import { NewUser } from '../src/components/users';
+import { INewUser } from '../src/components/users';
 
 const { describe, it } = mocha;
-const newUser: NewUser = {
+
+const newUser: INewUser = {
   firstName: 'Jane',
   lastName: 'Doe',
   email: 'jane@doe.com',
@@ -18,6 +19,14 @@ const noneexistingUser = {
   email: 'nonexisting@email.com',
   password: 'password',
 };
+
+const adminUser = {
+  email: 'john@doe.com',
+  password: 'john',
+};
+
+let userToken: string;
+let adminToken: string;
 
 describe('Users controller', () => {
   describe('POST /users', () => {
@@ -65,18 +74,58 @@ describe('Users controller', () => {
       expect(response.body).to.be.a('object');
       expect(response.statusCode).to.equal(404);
     });
-    it('Responds with statusCode 200 after successful login', async () => {
+    it('Responds with statusCode 200 after successful user login', async () => {
       const response = await request(app).post('/users/login').send(newUser);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
-      expect(response.body).has.property('jwt');
-      expect(response.body.jwt).to.be.a('string');
+      expect(response.body).has.property('token');
+      expect(response.body.token).to.be.a('string');
       expect(response.statusCode).to.equal(200);
+      userToken = response.body.token;
+    });
+    it('Responds with statusCode 200 after successful admin login', async () => {
+      const response = await request(app).post('/users/login').send(adminUser);
+      expect(response.type).to.equal('application/json');
+      expect(response.body).to.be.a('object');
+      expect(response.body).has.property('token');
+      expect(response.body.token).to.be.a('string');
+      expect(response.statusCode).to.equal(200);
+      adminToken = response.body.token;
     });
   });
   describe('GET /users', () => {
-    it('Responds with statusCode 200 and list of users', async () => {
+    it('Responds with statusCode 401 because of no token', async () => {
       const response = await request(app).get('/users');
+      expect(response.type).to.equal('application/json');
+      expect(response.body).to.be.a('object');
+      expect(response.body).has.property('error');
+      expect(response.body.error).to.equal('No token provided');
+      expect(response.statusCode).to.equal(401);
+    });
+    it('Responds with statusCode 401 because of invalid token', async () => {
+      const response = await request(app)
+        .get('/users')
+        .set('Authorization', 'Bearer ölskfkjsfslfjlskjf');
+      expect(response.type).to.equal('application/json');
+      expect(response.body).to.be.a('object');
+      expect(response.body).has.property('error');
+      expect(response.body.error).to.equal('Token is not valid');
+      expect(response.statusCode).to.equal(401);
+    });
+    it('Responds with statusCode 401 because of insufficent user rights', async () => {
+      const response = await request(app)
+        .get('/users')
+        .set('Authorization', `Bearer ${userToken}`);
+      expect(response.type).to.equal('application/json');
+      expect(response.body).to.be.a('object');
+      expect(response.body).has.property('error');
+      expect(response.body.error).to.equal('You have to be admin for this operatation');
+      expect(response.statusCode).to.equal(401);
+    });
+    it('Responds with statusCode 200 and list of users', async () => {
+      const response = await request(app)
+        .get('/users')
+        .set('Authorization', `Bearer ${adminToken}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('users');
@@ -87,7 +136,9 @@ describe('Users controller', () => {
   });
   describe('GET /users/:id', () => {
     it('Responds with statusCode 200 and user data', async () => {
-      const response = await request(app).get(`/users/${userId}`);
+      const response = await request(app)
+        .get(`/users/${userId}`)
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('user');
@@ -99,7 +150,9 @@ describe('Users controller', () => {
       expect(response.statusCode).to.equal(200);
     });
     it('Responds with statusCode 400 due to inproper user id', async () => {
-      const response = await request(app).get(`/users/${inproperUserId}`);
+      const response = await request(app)
+        .get(`/users/${inproperUserId}`)
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('message');
@@ -107,7 +160,9 @@ describe('Users controller', () => {
       expect(response.statusCode).to.equal(400);
     });
     it('Responds with statusCode 404 due to nonexisting user id', async () => {
-      const response = await request(app).get(`/users/${nonexistingUserId}`);
+      const response = await request(app)
+        .get(`/users/${nonexistingUserId}`)
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('message');
@@ -117,18 +172,25 @@ describe('Users controller', () => {
   describe('PATCH /users/:id', () => {
     it('Responds with statusCode 204 after changing users data', async () => {
       const firstName = 'Maarika';
-      const response = await request(app).patch(`/users/${userId}`).send({ firstName });
+      const response = await request(app)
+        .patch(`/users/${userId}`)
+        .send({ firstName })
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.type).to.equal('');
       expect(response.statusCode).to.equal(204);
     });
     it('Responds with statusCode 400 due to missing data to change', async () => {
-      const response = await request(app).patch(`/users/${userId}`);
+      const response = await request(app)
+        .patch(`/users/${userId}`)
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).has.property('message');
       expect(response.statusCode).to.equal(400);
     });
     it('Responds with statusCode 400 due to inproper user id', async () => {
-      const response = await request(app).patch(`/users/${inproperUserId}`);
+      const response = await request(app)
+        .patch(`/users/${inproperUserId}`)
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('message');
@@ -136,7 +198,9 @@ describe('Users controller', () => {
       expect(response.statusCode).to.equal(400);
     });
     it('Responds with statusCode 404 due to nonexisting user id', async () => {
-      const response = await request(app).patch(`/users/${nonexistingUserId}`);
+      const response = await request(app)
+        .patch(`/users/${nonexistingUserId}`)
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('message');
@@ -145,12 +209,16 @@ describe('Users controller', () => {
   });
   describe('DELETE /users/:id', () => {
     it('Responds with statusCode 204 after deleting user', async () => {
-      const response = await request(app).delete(`/users/${userId}`);
+      const response = await request(app)
+        .delete(`/users/${userId}`)
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.type).to.equal('');
       expect(response.statusCode).to.equal(204);
     });
     it('Responds with statusCode 400 due to inproper user id', async () => {
-      const response = await request(app).delete(`/users/${inproperUserId}`);
+      const response = await request(app)
+        .delete(`/users/${inproperUserId}`)
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('message');
@@ -158,7 +226,9 @@ describe('Users controller', () => {
       expect(response.statusCode).to.equal(400);
     });
     it('Responds with statusCode 404 due to nonexisting user id', async () => {
-      const response = await request(app).delete(`/users/${nonexistingUserId}`);
+      const response = await request(app)
+        .delete(`/users/${nonexistingUserId}`)
+        .set('Authorization', `Bearer ${userToken}`);
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('message');
