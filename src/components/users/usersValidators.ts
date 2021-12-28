@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Joi, { ValidationError } from 'joi';
 import { IUser, usersService } from '.';
+import { logger } from '../general';
 
 const newUserSchema = Joi.object({
   firstName: Joi.string()
@@ -80,7 +81,7 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     res.locals.user = user;
     return next();
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
   return next();
 };
@@ -112,7 +113,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     res.locals.newUser = validate.value;
     return next();
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
   return next();
 };
@@ -156,7 +157,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     };
     return next();
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
   return next();
 };
@@ -180,7 +181,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     res.locals.loginPassword = password;
     res.locals.user = user;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
   return next();
 };

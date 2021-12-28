@@ -19,7 +19,8 @@
     "express": "^4.17.1",
     "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
-    "swagger-ui-express": "^4.3.0"
+    "swagger-ui-express": "^4.3.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -31,6 +32,7 @@
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.10.3",
     "@types/supertest": "^2.0.11",
+    "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "chai": "^4.3.4",

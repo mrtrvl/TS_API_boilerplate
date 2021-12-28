@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { logger } from '..';
 import config from '../../../config';
 import { IUser } from '../../users/interfaces';
 
@@ -16,7 +17,7 @@ const jwtService = {
       const verify = await jwt.verify(token, config.jwt.secret);
       return verify;
     } catch (error) {
-      // console.log(error);
+      logger.error(error);
       return false;
     }
   },

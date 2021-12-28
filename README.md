@@ -2,7 +2,7 @@
 TS Node Express API boilerplate with users
 
 # Installation
-git pull https://github.com/mrtrvl/TS_API_boilerplate.git
+git clone https://github.com/mrtrvl/TS_API_boilerplate.git
 
 cd TS_API_boilerplate
 
