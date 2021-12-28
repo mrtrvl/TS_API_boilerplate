@@ -6,6 +6,7 @@ import { usersRouter } from './components/users';
 import { notFoundRouter } from './components/notFound';
 import swaggerDocument from '../openapi.json';
 import config from './config';
+import { errorHandler } from './components/general';
 
 const app: Application = express();
 
@@ -28,5 +29,6 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/ping', pingRouter);
 app.use('/users', usersRouter);
 app.use(notFoundRouter);
+app.use(errorHandler);
 
 export default app;

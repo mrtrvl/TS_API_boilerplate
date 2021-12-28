@@ -99,7 +99,8 @@ describe('Users controller', () => {
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('error');
-      expect(response.body.error).to.equal('No token provided');
+      expect(response.body.error).to.equal(true);
+      expect(response.body.message).to.equal('No token provided');
       expect(response.statusCode).to.equal(401);
     });
     it('Responds with statusCode 401 because of invalid token', async () => {
@@ -109,7 +110,8 @@ describe('Users controller', () => {
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('error');
-      expect(response.body.error).to.equal('Token is not valid');
+      expect(response.body.error).to.equal(true);
+      expect(response.body.message).to.equal('Token is not valid');
       expect(response.statusCode).to.equal(401);
     });
     it('Responds with statusCode 401 because of insufficent user rights', async () => {
@@ -119,7 +121,8 @@ describe('Users controller', () => {
       expect(response.type).to.equal('application/json');
       expect(response.body).to.be.a('object');
       expect(response.body).has.property('error');
-      expect(response.body.error).to.equal('You have to be admin for this operatation');
+      expect(response.body.error).to.equal(true);
+      expect(response.body.message).to.equal('You have to be admin for this operatation');
       expect(response.statusCode).to.equal(401);
     });
     it('Responds with statusCode 200 and list of users', async () => {

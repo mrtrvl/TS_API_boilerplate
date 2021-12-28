@@ -74,16 +74,14 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     }
     const user: IUser | undefined = await usersService.getUserById(validate.value.id);
     if (!user) {
-      return res.status(404).json({
-        message: `No user found with id: ${id}`,
-      });
+      throw new Error(`No user found with id: ${id}`);
     }
     res.locals.user = user;
     return next();
-  } catch (error) {
-    logger.error(error);
+  } catch (error: any) {
+    error.code = 404;
+    return next(error);
   }
-  return next();
 };
 
 /**

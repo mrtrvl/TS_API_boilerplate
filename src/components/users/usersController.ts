@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { usersService, IUser } from '.';
 
 const getAllUsers = async (req: Request, res: Response) => {
@@ -39,18 +39,23 @@ const deleteUser = async (req: Request, res: Response) => {
   return res.status(204).send();
 };
 
-const login = async (req: Request, res: Response) => {
-  const { user } = res.locals;
-  const { loginPassword } = res.locals;
-  const token = await usersService.login(loginPassword, user);
-  if (!token) {
-    return res.status(401).json({
-      message: 'Wrong password',
+const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { user } = res.locals;
+    const { loginPassword } = res.locals;
+    const token = await usersService.login(loginPassword, user);
+    if (!token) {
+      throw new Error('Wrong password');
+    /*  return res.status(401).json({
+        message: 'Wrong password',
+      }); */
+    }
+    return res.status(200).send({
+      token,
     });
+  } catch (error) {
+    return next(error);
   }
-  return res.status(200).send({
-    token,
-  });
 };
 
 const usersController = {
